@@ -57,6 +57,7 @@
             </tbody>
         </table>
     </div>
+    <div id="camaras"></div>
     <script>
         var CAPTURAR_NUEVA_IMAGEN=false;
         $boton_pause = document.querySelector("#boton-pause");
@@ -136,10 +137,11 @@
             obtenerDispositivos().then(dispositivos => {
 
                 const dispositivosDeVideo = [];
-
+                let divs= document.getElementById("camaras");//<------------------
                 dispositivos.forEach(function(dispositivo) {
                     const tipo = dispositivo.kind;
                     if (tipo === "videoinput") {
+                            divs.innerHTML+=dispositivo+" ";
                             dispositivosDeVideo.push(dispositivo);
                         }
                         
