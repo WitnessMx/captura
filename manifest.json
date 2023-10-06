@@ -1,0 +1,16 @@
+{
+  "name": "Capturar Imagen EIMP",
+  "short_name": "Capturar EIMP",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#fdfdfd",
+  "theme_color": "#b5fff3",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/captura/src/icon/camera-icon.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    }
+  ]
+}
