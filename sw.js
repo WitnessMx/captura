@@ -1,4 +1,4 @@
-const CapturaPWA = "CapturaEIMP@v1-cache";
+const CapturaPWA = "CapturaEIMP@v3-cache";
 const assets = [
   "/captura/",
   "/captura/index.html",
@@ -19,7 +19,7 @@ self.addEventListener('activate',(e)=>{
        caches.keys().then(cacheList=>{
           return Promise.all(
               cacheList.map(cache=>{
-                  if(!mapaPWA.includes(cache)){
+                  if(!CapturaPWA.includes(cache)){
                       return caches.delete(cache);
                   }
           
