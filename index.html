@@ -3,10 +3,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="sources/scripts/jquery-3.6.1.js"></script>
+   
+
+
+    <link rel="manifest" href="manifest.json">
+    <!-- ios support -->
+    <link rel="apple-touch-icon" href="src/icon/camera-icon.png">
+    <meta name="apple-mobile-web-app-status-bar" content="#db4938">
+    <meta name="theme-color" content="#db4938">
+
     <link rel="stylesheet" href="sources/styles/style_calibracion2023.css">
     <title>CAPTURA DE IMAGEN</title>
-
 </head>
 <body>
     <div class="contenedor">
@@ -59,9 +66,9 @@
         $boton_play = document.querySelector("#boton-play");
         $boton_cancelar_play=document.querySelector('#boton-cancelar-play');
         $boton_cancelar_pause=document.querySelector('#boton-cancelar-pause');
-        $boton_guardar=document.querySelector('#boton-guardar');
+        let boton_guardar=document.getElementById('boton-guardar');
         $select=document.querySelector('#seleccionarDispositivo');
-        $canvas=document.querySelector('#canvas')
+        let canvas=document.getElementById('canvas')
         var video=document.querySelector('#video');
 
 
@@ -73,7 +80,6 @@
         const obtenerDispositivos = () => navigator
             .mediaDevices
             .enumerateDevices();
-        // console.log(navigator.mediaDevices.enumerateDevices);
         const llenarSelectConDispositivosDisponibles = () => {
 
             limpiarSelect();
@@ -129,13 +135,11 @@
                             navigator.webkitGetUSerMedia||
                             navigator.mozGetUSerMEdia);
 
-            //Guarda el stream Global
-            // Comenzamos pidiendo los dispositivos
+
             obtenerDispositivos().then(dispositivos => {
-                // Vamos a filtrarlos y guardar aquí los de vídeo
+
                 const dispositivosDeVideo = [];
 
-                // Recorrer y filtrar
                 dispositivos.forEach(function(dispositivo) {
                     const tipo = dispositivo.kind;
                     if (tipo === "videoinput") {
@@ -144,33 +148,28 @@
                         
 
                 });
-                // Vemos si encontramos algún dispositivo, y en caso de que si, entonces llamamos a la función
-                // y le pasamos el id de dispositivo
+
                 if (dispositivosDeVideo.length > 0) {
-                // Mostrar stream con el ID del primer dispositivo, luego el usuario puede cambiar
-                    mostrarStream(dispositivosDeVideo[1].deviceId);
+                    mostrarStream(dispositivosDeVideo[0].deviceId);//<--- cambiar a 1 para Movil camara trasera
                 }
             });
             const mostrarStream=idDispositivo=>{
-                //restricciones (contraints) *requerido
+
                 navigator.getMedia({ video:{
                                         deviceId:idDispositivo,
                                     // width: { ideal: 425 }, 
                                         height: { ideal: 1080 } 
                                         }
-                                    },//funcion de finalizacion (susses-callback) *Requerido
+                                    },
                                     function(localMediaStream){
-                                        //console.log(localMediaStream);
                                         video.srcObject=localMediaStream;
-                                        // Escuchar cuando seleccionen otra opción y entonces llamar a esta función
+
                                         $select.onchange = () => {
-                                            // Detener el stream
                                             if (stream) {
                                                 stream.getTracks().forEach(function(track) {
                                                     track.stop();
                                                 });
                                             }
-                                            // Mostrar el nuevo stream con el dispositivo seleccionado
                                             mostrarStream($select.value);
                                         }
                                         
@@ -182,7 +181,6 @@
                                                 video.setAttribute('style','height:2px;');
                                                 CAPTURAR_NUEVA_IMAGEN=false;
                                                 stream.getTracks()[0].stop();
-                                                //console.log(stream.getTracks()[0].readyState);
                                             });
 
 
@@ -205,28 +203,31 @@
         });
        
         
-        $boton_guardar.addEventListener("click",function(){
-                        $idGage=document.querySelector("#idGage1");
+        boton_guardar.addEventListener("click",function(){
                         
+                        idGage=document.getElementById("idGage1");
                         if (CAPTURAR_NUEVA_IMAGEN==true) {
-                            if($idGage.value!=''){
-                                //Obtener contexto del canvas y dibujar sobre él
-                                let contexto = $canvas.getContext("2d");
-                                $canvas.width = video.videoWidth;
-                                $canvas.height = video.videoHeight;
-                                contexto.drawImage(video, 0, 0, $canvas.width, $canvas.height);
+                            if(idGage.value!=''){
+                                let contexto = canvas.getContext("2d");
+                                canvas.width = video.videoWidth;
+                                canvas.height = video.videoHeight;
+                                contexto.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                                new Promise(function (resolve, reject) {
+                                canvas.toBlob(function (blob) {resolve(URL.createObjectURL(blob));}, "image/webp");
                                 
-                                let foto = $canvas.toDataURL(); //Esta es la foto, en base 64
-                                //console.log($canvas);
-                                var f=new Date();
-                                var dd=(f.getDate()<10?'0':'')+f.getDate();
-                                var mm=((f.getMonth()+1)<10?'0':'')+(f.getMonth()+1);
-                                var yy=(f.getFullYear().toString().substr(-2));
-                                var FechaHoy=dd+mm+yy;
-                                let enlace = document.createElement('a'); // Crear un <a>
-                                enlace.download = $idGage.value +" IMG "+FechaHoy+".png";
-                                enlace.href = foto;
-                                enlace.click();
+                                }).then(function(data){
+                                    let foto = canvas.toDataURL();
+                                    var f=new Date();
+                                    var dd=(f.getDate()<10?'0':'')+f.getDate();
+                                    var mm=((f.getMonth()+1)<10?'0':'')+(f.getMonth()+1);
+                                    var yy=(f.getFullYear().toString().substr(-2));
+                                    var FechaHoy=dd+mm+yy;
+                                    let imageLink = document.createElement("a");
+                                    imageLink.setAttribute("href", data);
+                                    imageLink.setAttribute('download',idGage.value +" IMG "+FechaHoy+".webp");
+                                    imageLink.click();                               
+                                });
                                 CAPTURAR_NUEVA_IMAGEN=false;
                                 video.play();
                                 
@@ -240,9 +241,16 @@
 
                     });
 
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", function() {
+                navigator.serviceWorker
+                .register("/captura/sw.js")
+                .then(res => console.log("service worker registrado"))
+                .catch(err => console.log("service worker not registrado", err));
+            });
+        }
 
-
-
+    
 
     </script>
 </body>
