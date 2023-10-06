@@ -1,9 +1,9 @@
 const CapturaPWA = "CapturaEIMP@v1-cache";
 const assets = [
-  "/",
-  "/index.html",
-  "/src/styles/style_calibracion2023.css",
-  "/src/icon/camera-icon.png"
+  "/captura/",
+  "/captura/index.html",
+  "/captura/src/styles/style_calibracion2023.css",
+  "/captura/src/icon/camera-icon.png"
 ];
 
 self.addEventListener("install", installEvent => {
