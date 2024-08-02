@@ -217,6 +217,7 @@
                                 
                                 }).then(function(data){
                                     let foto = canvas.toDataURL();
+                                    console.log(canvas.toDataURL());
                                     var f=new Date();
                                     var dd=(f.getDate()<10?'0':'')+f.getDate();
                                     var mm=((f.getMonth()+1)<10?'0':'')+(f.getMonth()+1);
